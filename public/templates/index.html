@@ -1,0 +1,18 @@
+<html>
+<head>
+<script src='/socket.io/socket.io.js'></script>
+<script>
+    var socket = io.connect('http://localhost:8005');
+    socket.on('news', function(data) {
+        console.log(data);
+        socket.emit('my other event', {my:'data'});
+    });
+</script>
+<link rel='stylesheet' href='/css/index.css'>
+</head>
+<body>
+  <div class='action-board'></div>
+  <div class='game-board'></div>
+  <div class='blank-board'></div>
+</body>
+</html>
