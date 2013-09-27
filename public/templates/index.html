@@ -1,18 +1,42 @@
 <html>
 <head>
 <script src='/socket.io/socket.io.js'></script>
+<script src='/js/Crafty.js'></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script>
-    var socket = io.connect('http://localhost:8005');
-    socket.on('news', function(data) {
-        console.log(data);
-        socket.emit('my other event', {my:'data'});
-    });
+    var socket = io.connect('http://'+window.location.host+'/');
+</script>
+<script type='text/javascript'>
+    var resizeDiv = function(node) {
+        node.style.height = '100%';
+    }
+    var Game = {
+        map_grid: {
+            width:24,
+            height:24
+        },
+        tile: {
+            width: 16,
+            height: 16
+        },
+        start: function() {
+            var node = document.getElementById('game-board');
+            var width = node.offsetWidth;
+            var height = window.innerHeight;
+            Crafty.init(width, height, 'game-board');
+            resizeDiv(node);
+            Crafty.sprite("img/airplane-icon-96.png", {plane:[0, 0, 96,96]});
+            var plane = Crafty.e("2D, DOM, plane");
+        }		   
+    }
+    window.onload = Game.start;
+
 </script>
 <link rel='stylesheet' href='/css/index.css'>
 </head>
 <body>
-  <div class='action-board'></div>
-  <div class='game-board'></div>
-  <div class='blank-board'></div>
+  <div id='action-board'></div>
+  <div id='game-board'></div>
+  <div id='blank-board'></div>
 </body>
 </html>
