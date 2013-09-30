@@ -3,6 +3,7 @@ var path = require('path');
 var fs = require('fs');
 var format = require('util').format;
 var MongoClient = require('mongodb').MongoClient;
+var swig  = require('swig');
 
 var app = express(),
     server = require('http').createServer(app),
@@ -16,6 +17,10 @@ app.configure('production', function(){
 app.configure('development', function(){
     app.use(express.logger());
 });
+app.engine('html', swig.renderFile);
+app.set('view engine', 'html');
+app.set('views', path.join(__dirname, '/public/templates'));
+swig.setDefaults({ cache: false });
 
 var mydb;
 MongoClient.connect("mongodb://localhost:27017/planeFight", function(err, db) {
@@ -23,12 +28,13 @@ MongoClient.connect("mongodb://localhost:27017/planeFight", function(err, db) {
     mydb = db;
 });
 app.get('/', function(req, res) {
-    res.sendfile(path.join(__dirname, '/public/templates/index.html'));
+    res.render('index');
 });
 app.get('/join/:roomid/:playerid?', function(req, res) {
     var roomid = req.params.roomid;
     var playerid = req.params.playerid;
-    res.sendfile(path.join(__dirname, '/public/templates/player.html'));
+    console.log(format('roomid:%s, playerid:%s', playerid, roomid));
+    res.render('player', {roomid:roomid, playerid:playerid});
 });
 var room = io
     .of('/room')
@@ -40,6 +46,11 @@ var room = io
             socket.roomid = roomid;
             socket.emit('addRoom', roomid);
             console.log(format('create room %s.', roomid));
+        });
+        socket.on('close', function() {
+            console.log(format('socket closed.'));
+            mydb.collection('rooms').remove({'roomid':socket.roomid});
+            socket.destroy();
         });
     });
 var player = io

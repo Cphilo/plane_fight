@@ -1,11 +1,11 @@
 <html>
 <head>
     <title>Flying</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <script src='/socket.io/socket.io.js'></script>
     <script src='/js/Crafty.js'></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type='text/javascript'>
-        var socket = io.connect('http://'+window.location.host+'/');
         var room = io.connect('http://'+window.location.host+'/room');
         room.on('addRoom', function(roomid) {
             $('#create-room').css('display', 'none');

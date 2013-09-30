@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{roomid}}:{{playerid}}</title>
+    <script src='/socket.io/socket.io.js'></script>
+    <script src='/js/Crafty.js'></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type='text/javascript'>
+        var player = io.connect('http://'+window.location.host+'/player');
+    </script>
+    <link rel='stylesheet' href='http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css'>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    <style>
+        .direction-board {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class='direction-board'>
+    <i class='icon-circle-arrow-up icon-5x'></i><br>
+    <i class='icon-circle-arrow-left icon-5x'></i>
+    <i class='icon-circle-arrow-down icon-5x'></i>
+    <i class='icon-circle-arrow-right icon-5x'></i>
+</div>
+</body>
+</html>
