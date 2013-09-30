@@ -3,4 +3,3 @@ env/
 *.swp
 .idea/
 node_modules/
-public/img/

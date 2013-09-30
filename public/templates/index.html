@@ -1,7 +1,6 @@
 <html>
 <head>
     <title>Flying</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <script src='/socket.io/socket.io.js'></script>
     <script src='/js/Crafty.js'></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -54,11 +53,13 @@
         var createRoom = function() {
             console.log('create click');
             var roomid = $('input[name=room-number]').val();
-            room.emit('createRoom', roomid);
+            var playerNumber = parseInt($('input[name=player-number]').val());
+            room.emit('createRoom', roomid, playerNumber);
         }
         window.onload = initialize;
     </script>
-    <link rel='stylesheet' href='http://getbootstrap.com/2.3.2/assets/css/bootstrap.css'>
+    <link rel='stylesheet' href='http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css'>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
     <link rel='stylesheet' href='/css/index.css'>
 </head>
 <body>
@@ -66,7 +67,10 @@
     <br>
     <div id='create-room' style='display: block;'>
         <label  class='form-inline'>房间号
-            <input type='text' name='room-number' class='input-medium'>
+            <input type='text' name='room-number' class='input-medium' placeholder="英文字母，数字均可">
+        </label>
+        <label  class='form-inline'>玩家人数
+            <input type='text' name='player-number' class='input-small' placeholder="1-10">
         </label>
         <input type='button' value='创建' class='btn btn-success' onclick="createRoom()">
     </div>

@@ -39,8 +39,8 @@ app.get('/join/:roomid/:playerid?', function(req, res) {
 var room = io
     .of('/room')
     .on('connection', function (socket) {
-        socket.on('createRoom', function(roomid) {
-            mydb.collection('rooms').insert({'roomid':roomid, 'players':[]}, {safe:true}, function(err, records) {
+        socket.on('createRoom', function(roomid, playerNumber) {
+            mydb.collection('rooms').insert({'roomid':roomid, 'players':[], 'playerNumber':playerNumber}, {safe:true}, function(err, records) {
                 if(err){ console.log(format('insert error:%s', err)); }
             });
             socket.roomid = roomid;
