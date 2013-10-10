@@ -1,0 +1,33 @@
+/*icon download awesome url. http://www.iconarchive.com */
+html body
+{
+    position:relative;
+    width:100%;
+    height:100%;
+}
+#action-board
+{
+    left:0px;
+    top:0px;
+    width:200px;
+    height:100%;
+    position:absolute;
+    background-image:url('/img/geometry.png');
+    z-index: 100;
+}
+#game-board
+{
+    margin-left:200px;
+    margin-right:200px;
+    background-image:url('/img/tree_bark.png');
+}
+#blank-board
+{
+    position:absolute;
+    right:0px;
+    top:0px;
+    width:200px;
+    height:100%;
+    background-image:url('/img/geometry.png');
+}
+

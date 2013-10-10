@@ -1,83 +1,45 @@
 <html>
 <head>
     <title>Flying</title>
-    <script src='/socket.io/socket.io.js'></script>
-    <script src='/js/Crafty.js'></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script type='text/javascript'>
-        var room = io.connect('http://'+window.location.host+'/room');
-        room.on('addRoom', function(roomid) {
-            $('#create-room').css('display', 'none');
-            var html = "<h5>房间号：<span id='roomid'>"+roomid+"</span></h5><h5>玩家：空</h5>";
-            $('#msg-board').append(html);
+    <script>
+        $(document).ready(function() {
+            $('.join').click(function() {
+                var roomid = $(this).parent().children('span.roomid').text();
+                var playerid = $(this).parent().children('input[name=playerid]').val();
+                window.location.href = '/'+roomid+'/'+playerid+'/join';
+            });
+            $('#create').click(function() {
+                var roomid = $('input[name=room-number]').val();
+                var playerNumber = parseInt($('input[name=player-number]').val());
+                window.location.href = '/'+roomid+'/'+playerNumber+'/create';
+            });
         });
-        var initialize =  function() {
-            var node = document.getElementById('game-board');
-            var w = node.clientWidth;
-            var h = node.clientHeight;
-            Crafty.init(w, h, 'game-board');
-            node.style.height = '100%';
-            h = node.clientHeight;
-            var tileW = 64;
-            var tileH = 64;
-            var xtiles = parseInt(w / tileW);
-            var ytiles = parseInt(h / tileH);
-            Crafty.sprite("img/airplane-icon-64.png", {plane:[0, 0, 64, 64]});
-            Crafty.sprite("img/big-stone-48.png", {bigStone:[0, 0, 64, 64]});
-            Crafty.sprite("img/Stone-Axe-icon-48.png", {axeStone:[0, 0, 64, 64]});
-            Crafty.sprite("img/Stone-Hoe-icon-48.png", {hoeStone:[0, 0, 64, 64]});
-            Crafty.sprite("img/Stone-Pickaxe-icon-48.png", {pickAxeStone:[0, 0, 64, 64]});
-            Crafty.sprite("img/Stone-Sword-icon-48.png", {swordStone:[0, 0, 64, 64]});
-            Crafty.sprite("img/Vans-Stone-icon-48.png", {vansStone:[0, 0, 64, 64]});
-            Crafty.sprite("img/Stone-Shovel-icon-48.png", {shovelStone:[0, 0, 64, 64]});
-            Crafty.sprite("img/White-Stone-icon-48.png", {smallStone:[0, 0, 64, 64]});
-            var plane = Crafty.e("2D, DOM, plane")
-                    .attr({x:tileW*xtiles/2, y:tileH*(ytiles-1)});
-//            var bigStone = Crafty.e("2D, DOM, bigStone")
-//                    .attr({x:tileW*0, y:tileH*1});
-//            var axeStone = Crafty.e("2D, DOM, axeStone")
-//                    .attr({x:tileW*0, y:tileH*2});
-//            var hoeStone = Crafty.e("2D, DOM, hoeStone")
-//                    .attr({x:tileW*0, y:tileH*3});
-//            var pickAxeStone = Crafty.e("2D, DOM, pickAxeStone")
-//                    .attr({x:tileW*0, y:tileH*4});
-//            var swordStone = Crafty.e("2D, DOM, swordStone")
-//                    .attr({x:tileW*0, y:tileH*5});
-//            var vansStone = Crafty.e("2D, DOM, vansStone")
-//                    .attr({x:tileW*0, y:tileH*6});
-//            var smallStone = Crafty.e("2D, DOM, smallStone")
-//                    .attr({x:tileW*0, y:tileH*7});
-//            var shovelStone = Crafty.e("2D, DOM, shovelStone")
-//                    .attr({x:tileW*0, y:tileH*8});
-        }
-        var createRoom = function() {
-            console.log('create click');
-            var roomid = $('input[name=room-number]').val();
-            var playerNumber = parseInt($('input[name=player-number]').val());
-            room.emit('createRoom', roomid, playerNumber);
-        }
-        window.onload = initialize;
     </script>
-    <link rel='stylesheet' href='http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css'>
-    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-    <link rel='stylesheet' href='/css/index.css'>
+    <link rel='stylesheet' href='http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css'>
 </head>
 <body>
-<div id='action-board'>
+<div>
     <br>
-    <div id='create-room' style='display: block;'>
+    <div>
         <label  class='form-inline'>房间号
             <input type='text' name='room-number' class='input-medium' placeholder="英文字母，数字均可">
         </label>
         <label  class='form-inline'>玩家人数
             <input type='text' name='player-number' class='input-small' placeholder="1-10">
         </label>
-        <input type='button' value='创建' class='btn btn-success' onclick="createRoom()">
+        <input type='button' value='创建' class='btn btn-success' id='create'>
     </div>
-    <div id='msg-board'>
+    <div id='roomBoard'>
+        <br>
+        {% for room in rooms %}
+        <div class='form-inline'>
+            <span class='roomid'>{{ room.roomid }}</span>({{ room.playerNumber }}):
+            {% for p in room.players %}{{ p }}{% endfor %}
+            <input class="input-small" type="text" placeholder="playerid" name='playerid'>
+            <input type='button' value='加入' class='join btn btn-small'>
+        </div>
+        {% endfor %}
     </div>
-</div>
-<div id='game-board'></div>
-<div id='blank-board'></div>
 </body>
 </html>

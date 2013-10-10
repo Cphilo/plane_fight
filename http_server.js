@@ -28,35 +28,61 @@ MongoClient.connect("mongodb://localhost:27017/planeFight", function(err, db) {
     mydb = db;
 });
 app.get('/', function(req, res) {
-    res.render('index');
+    var msg = '';
+    mydb.collection('rooms').find({}).toArray(function(err, rooms) {
+        if(err){ msg = format('find err:%s', err); }
+        res.render('index', {rooms:rooms, msg:msg});
+    });
 });
-app.get('/join/:roomid/:playerid?', function(req, res) {
+
+app.get('/:roomid/:playerNumber/create', function(req, res) {
+    var roomid = req.params.roomid;
+    var playerNumber = req.params.playerNumber;
+    mydb.collection('rooms').insert({roomid:roomid, players:[], playerNumber:playerNumber}, {safe:true}, function(err, records) {
+        if(err){ console.log(format('insert error:%s', err)); }
+    });
+    res.render('room', {roomid:roomid, playerNumber:playerNumber, players:[]});
+});
+
+app.get('/:roomid/:playerid/join', function(req, res) {
     var roomid = req.params.roomid;
     var playerid = req.params.playerid;
-    console.log(format('roomid:%s, playerid:%s', playerid, roomid));
-    res.render('player', {roomid:roomid, playerid:playerid});
+    var msg = '';
+    mydb.collection('rooms').findOne({roomid:roomid}, function(err, room) {
+        if(err){
+            msg = format('fetch room error:%s', err);
+            res.render('player', {roomid:roomid, playerid:playerid, players:room.players, msg:msg});
+        }
+        else {
+            mydb.collection('rooms').update({roomid:roomid}, {$push:{players:playerid}}, function(err, room) {
+                if(err){ msg = format('update room error:%s', err); }
+                console.log('new players:'+room.players);
+                res.render('player', {roomid:roomid, playerid:playerid, players:room.players, msg:msg});
+            });
+        }
+    });
 });
-var room = io
+var roomSocket = io
     .of('/room')
     .on('connection', function (socket) {
-        socket.on('createRoom', function(roomid, playerNumber) {
-            mydb.collection('rooms').insert({'roomid':roomid, 'players':[], 'playerNumber':playerNumber}, {safe:true}, function(err, records) {
-                if(err){ console.log(format('insert error:%s', err)); }
-            });
+        socket.on('createRoom', function(roomid) {
             socket.roomid = roomid;
-            socket.emit('addRoom', roomid);
-            console.log(format('create room %s.', roomid));
         });
-        socket.on('close', function() {
+        /*socket.on('close', function() {
             console.log(format('socket closed.'));
             mydb.collection('rooms').remove({'roomid':socket.roomid});
             socket.destroy();
-        });
+        });*/
     });
-var player = io
+var playerSocket = io
     .of('/player')
     .on('connection', function (socket) {
-        socket.on('addPlayer', function(roomid, playerid) {
-            socket.playerid = playerid;
+        socket.on('addPlayer', function(idObj) {
+            roomSocket.sockets.forEach(function(s) {
+                if(s.roomid == idObj.roomid) {
+                    s.emit('updateMsg', {playerid:idObj.playerid});
+                }
+            });
+            socket.idObj = idObj;
         });
     });
